@@ -1,0 +1,438 @@
+---
+title: "RedWine"
+author: '"Nouf Alkeraithe"'
+date: "December 23, 2018"
+output: html_document
+---
+
+load dataset
+
+<b>Objective</b>
+
+This analysis will investigate the Red Wine Dataset that is openly available on kaggle.com. A description of the data set informs that it contains objective information on a number of parameters that contribute to the rating of the quality of wine. I will be using R to ascertain information about the contents of the dataset in an attempt to determine the relationship between the fields of the dataset and the wine quality. The variable quality within the dataset will later form the basis of our linear model. Additionally a descriptive categorization of wine quality will be used to assist our analysis using the terms "good", "bad", and "average" to refer to the quality of wine with bad being a wine quality value below 5, average being between 5 and 7 and good being greater than 7.<br>
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# path1 = "C:/Users/YourUsername/Desktop/LocationOfFile"
+# setwd(path1)
+
+library(data.table)
+
+library(ggplot2)
+
+wine_qual = fread("wineQualityReds.csv")
+
+summary(wine_qual)
+
+structure(wine_qual)
+```
+<br>
+
+<b>Summary and Structure of dataset</b><br>
+Upon loading the dataset we see that it contains 1,599 observations of 12 variables and I used the summary() and structure() functions to get an idea of the layout of the dataset. The variables within the dataset included fixed.acidity, volatile.acidity, citric.acid, chlorides, free.sulphur.dioxide, total.sulphur.dioxide, density, pH, sulphates, alcohol, and quality. The were some interesting observation from running the structure function, for example, the values of citric acid seems to be distributed oddly with values from 0.00 to 0.04 to 0.56. Additionally variables like sulphates, alcohol and volatile.acidity seemed to be uniformly distributed. The results of running the summary() function gave a number of statistics for the variables in the dataset including, mean, median, min and max values for the variables. For example the fixed.acidity ranged from a min of 4.60, which is acidic, to 15.90, which is basic, meanwhile alcohol had a min of 8.4, a median of 10.2 and a max of 14.9. In order to determine if the hindsight given by these functions are correct I next turn my attention to generating univariate plots in order to better visualize the distribution of values within the dataset.<br>
+
+<b>Univariate plots</b><br>
+Histogram of Fixed Acidity <br>
+total.sulphur.dioxide, sulphates, free.sulphur.dioxide, fixed.acidity, residual.sugar, chlorides, citric.acidity, and alcohol.
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+hist(as.numeric(wine_qual$fixed.acidity),col=3,xlab = "fixed acidity",main = "Fixed Acidity")
+
+summary(wine_qual$fixed.acidity)
+```
+The distribution above is positiviely skewed with a few outliers at the higher ranges<br>
+Histogram of Volatile Acidity
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+hist(as.numeric(wine_qual$volatile.acidity),col=3,xlab = "volatile acidity",
+     main= "Volatile Acidity")
+
+summary(wine_qual$volatile.acidity)
+```
+The distribution of volatile acidity looks almost rectangular which is peculiar and there are a number of outliers with little data at the high ranges. The peculiar rectangular distribution may indicate an error in the data collection or that the data is incomplete<br>
+Histogram of Citric Acidity
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+hist(as.numeric(wine_qual$citric.acid),col=3,xlab = "citric acidity",main= "Citric Acidity")
+
+summary(wine_qual$citric.acid)
+```
+The distribution of citric acidity also shows a positively skewed distribution with a high peak below the 0.2 value range and majority of the data points distributed between the 0.2 and 0.5 ranges<br>
+Histogram of Residual Sugar
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+hist(as.numeric(wine_qual$residual.sugar),col=3,xlab = "residual sugar",
+     main = "Residual Sugar")
+
+summary(wine_qual$residual.sugar)
+```
+The distribution of residual sugar is positively skewed but is odd with most of the values lying within the 1 - 2 range and very low frequency in the other values<br>
+Histogram of Chlorides
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+hist(as.numeric(wine_qual$chlorides),col=3,xlab = "chlorides", main = "chlorides")
+
+summary(wine_qual$chlorides)
+```
+The distribution of chlorides is similar to that of residual sugar with the slight difference being most of the values are concentrated the single value of 0.087<br>
+Histogram of Free Sulphur Dioxide
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+hist(as.numeric(wine_qual$free.sulfur.dioxide),col=3,xlab = "free sulphur dioxide",
+     main = "Free Sulphur Dioxide")
+
+summary(wine_qual$free.sulfur.dioxide)
+```
+The distribution of free sulphur dioxide is positively skewed with a peak around 14 and few outliers in the high ranges<br>
+Histogram of Total Sulphur Dioxide
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+hist(as.numeric(wine_qual$total.sulfur.dioxide),col=3,xlab = "total sulphur dioxide",
+     main = "Total Sulphur Dioxide")
+
+summary(wine_qual$total.sulfur.dioxide)
+```
+Because total sulphur dioxide is a superset of free sulphur dioxide it is not a surprise that follows a similar distribution to that of free sulphur dioxide<br>
+Histogram of Density
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+hist(as.numeric(wine_qual$density),col=3,xlab = "density", main = "density")
+
+summary(wine_qual$density)
+```
+The histogram of the values of the density shows a normal distribution<br>
+Histogram of pH
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+hist(as.numeric(wine_qual$pH),col=3,xlab = "pH",main = "pH" )
+
+summary(wine_qual$pH)
+```
+Likewise pH also shows a normal distribution<br>
+Histogram of Sulphates
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+hist(as.numeric(wine_qual$sulphates),col=3,xlab = "sulphates", main = "sulphates")
+
+summary(wine_qual$sulphates)
+```
+The distribution of sulphates is positively skewed with most of the points being to the left of the median value of 0.62 <br>
+Histogram of Alcohol
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+hist(as.numeric(wine_qual$alcohol),col=3,xlab = "alcohol",main = "alcohol")
+
+summary(wine_qual$alcohol)
+```
+Alcohol also shows a positively skewed distribution <br>
+Histogram of Quality
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+hist(as.numeric(wine_qual$quality),col=3,xlab = "quality",main = "quality")
+
+summary(wine_qual$quality)
+```
+Quality shows a near normal distribution with the separation of values being mostly discrete<br>
+<b>Univariate Plot</b><br>
+The hist() function was used to generate plots for the variables within the dataset, however the variables had to be coerced to a numeric using as.numeric() before being passed to the hist() function which requires the input to be of type numeric. Additionally the label and colour of the plot was changed using the xlab and col parameters with the colour being set to green for the plots. The histogram of quality highlighted that majority of the wine samples within the dataset were either of bad or average quality which may indicate the reason for the odd distribution exhibited by chlorides and residual sugar.<br>
+
+<b>Initial thoughts and hypothesis</b><br>
+The variables that are important to the wine quality, upon doing some reading, are alcohol and pH this is consistent with the histograms obtained above however variables such as sulphates, fixed acidity, citric acidty, volatile acidity, free sulphur dioxide, and total sulphur dioxide may also play a role in the wine quality and will be further explored via bivariate analysis and linear modelling. There is some expectance that acidity (fixed acidity, citric acidty, volatile acidity) would also play a role in the quality of wine if there is pH is known to be an influential variable since pH measures how acidic or basic a substance is. Additionally since the variables pH and density are the only variables, excluding quality, that exhibit a normal distribution I will investigate if there is a correlation between these two variables which explains the noted similarity.<br>
+
+<b>Distribution and Outliers</b><br>
+1. Total Sulphur Dioxide, Sulphates, Free Sulphur Dioxide, Fixed Acidity, Residual Sugar, Chlorides, Citric Acidity, and Alcohol have a positively skewed distribution.<br> 
+2.The histograms of both residual sugar and chlorides are striking because of the odd distribution of values and the existence of many outliers particularly in the values greater than 5.0 for residual sugar and values greater than 0.2 for chlorides. Due to this these variables may be omitted later when I attempt to construct linear models.<br> 
+3. Density, pH and quality displayed uniform distribution and in particular.<br>
+
+<b>Generation of Bivariate Plots</b><br>
+
+Wine Quality vs chlorides
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+plot(wine_qual$quality,wine_qual$chlorides,main = "wine quality vs chlorides",
+     xlab = "quality",ylab = "chlorides")
+
+cor(wine_qual$quality,wine_qual$chlorides)
+```
+The minus sign indicates a negative correlation between chlorides content and quality. The correlation value is close to 0 and indicates that there is very little correlation between the two variables.<br>
+Wine Quality vs pH
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+plot(wine_qual$quality,wine_qual$pH,main = "wine quality vs pH",xlab = "quality",
+     ylab = "pH")
+
+cor(wine_qual$quality,wine_qual$pH)
+```
+There is a negative correlation between wine quality and pH and the two variables are weakly correlated due to the very small correlation coefficient of 0.0577. The lower the pH, more acidic, the better the quality of the wine however the significantly small coefficient means that we can consider pH to have little to no effect on quality for our given dataset.<br>
+Wine Quality vs Alcohol Content
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+plot(wine_qual$quality,wine_qual$alcohol,main = "wine quality vs alcohol",xlab = "quality",
+     ylab = "alcohol")
+
+cor(wine_qual$quality,wine_qual$alcohol)
+```
+There is a very strong positive correlation between alcohol content and wine quality with a correlation of 0.4761 therefore wine of higher quality has a higher alcohol content.<br>
+Wine Quality vs Density
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+boxplot(density~quality,data=wine_qual,main = "wine quality vs
+        density",xlab="quality",ylab="density")
+
+cor(wine_qual$quality,wine_qual$density)
+```
+The negative correlation between wine quality and density tells us that wine quality increases as the density of the wine decreases.<br>
+pH vs Density
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+plot(wine_qual$pH,wine_qual$density,main = "pH vs Density",xlab = "pH",
+     ylab = "Density")
+
+cor(wine_qual$pH,wine_qual$density)
+```
+pH and density have a strong negative correlation which indicates that as pH decreases, becomes more acidic, then the density of the wine decreases. This also helps to explain the correlation between density and wine quality<br>
+pH vs Alcohol Content
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+plot(wine_qual$pH,wine_qual$alcohol,main = "pH vs alcohol",xlab = "pH",
+     ylab = "alcohol")
+
+cor(wine_qual$pH,wine_qual$alcohol)
+```
+pH and alcohol show a moderate positive correlation which suggests that the more acidic the wine sample the more alcoholic it becomes<br>
+Alcohol Content vs Density
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+plot(wine_qual$alcohol,wine_qual$density,main = "Alcohol vs Density",xlab = "alcohol",
+     ylab = "Density")
+
+cor(wine_qual$alcohol,wine_qual$density)
+```
+There is a strong negative correlation between density and alcohol content which implies that the density of wine decreases as alcohol content increases. This result follows from the previously observed correlations between pH and alcohol content and pH and density.<br>
+Wine Quality vs Fixed Acidity
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+boxplot(fixed.acidity~quality,data=wine_qual,main = "wine quality vs
+        fixed acidity",xlab="quality",ylab="fixed acidity")
+
+cor(wine_qual$quality,wine_qual$fixed.acidity)
+```
+There is a weak positive correltation between fixed acidity and wine quality which is expected from the insight obtained between pH and quality.<br>
+Wine Quality vs Volatile Acidity
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+boxplot(volatile.acidity~quality,data=wine_qual,main = "wine quality vs
+        volatile acidity",xlab="quality",ylab="volatile acidity")
+
+cor(wine_qual$quality,wine_qual$volatile.acidity)
+```
+There is a surpisingly strong negative correlation between volatile acidity and wine quality which indicates that as volatile acidity decreases the quality of the wine increases.<br>
+Wine Quality vs Citric Acidity
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+boxplot(citric.acid~quality,data=wine_qual,main = "wine quality vs
+        citric acidity",xlab="quality",ylab="citric acidity")
+
+cor(wine_qual$quality,wine_qual$citric.acid)
+```
+The correlation between citric acidity is moderate and shows positive correlation<br>
+Wine Quality vs Sulphates
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+boxplot(sulphates~quality,data=wine_qual,main = "wine quality vs
+        sulphates",xlab="quality",ylab="sulphates")
+
+cor(wine_qual$quality,wine_qual$sulphates)
+```
+There is also a moderate positive correlation between sulphates and wine quality which indicates that as sulphate content increases so too does wine quality.<br>
+Wine Quality vs Free Sulphur Dioxide
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+boxplot(free.sulfur.dioxide~quality,data=wine_qual,main = "wine quality vs
+        free sulphur dioxide",xlab="quality",ylab="free sulphur dioxide")
+
+cor(wine_qual$quality,wine_qual$free.sulfur.dioxide)
+```
+Free sulphur dioxide is so weakly correlated with wine quality that it can be considered to have no effect on it. With a negative correlation and a very small correlation coefficient of 0.0506.<br>
+Wine Quality vs Total Sulphur Dioxide
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+boxplot(total.sulfur.dioxide~quality,data=wine_qual,main = "wine quality vs
+        total sulphur dioxide",xlab="quality",ylab="total sulphur dioxide")
+
+cor(wine_qual$quality,wine_qual$total.sulfur.dioxide)
+```
+Since total sulphur dioxide is a superset of free sulphur dioxide the negative weakly correlation that is observed between it and wine quality is expected.<br>
+Fixed Acidity vs Volatile Acidity
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+plot(wine_qual$fixed.acidity,wine_qual$volatile.acidity,main = "Fixed Acidity vs volatile
+     acidity",xlab = "fixed acidity", ylab = "volatile acidity")
+
+cor(wine_qual$fixed.acidity,wine_qual$volatile.acidity)
+```
+Fixed acidity and volatile acidity are moderately correlated and shows a negative correlation which informs us that as volatile acidity increases the value of fixed acidity decreases.<br>
+Citric Acidity vs Volatile Acidity
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+plot(wine_qual$citric.acid,wine_qual$volatile.acidity,main = "citric acidity vs volatile
+     acidity",xlab = "citric acidity", ylab = "volatile acidity")
+
+cor(wine_qual$citric.acid,wine_qual$volatile.acidity)
+```
+Citric acidity and volatile acidity show a strong negative correlation with a coefficient of 0.5525 which is the strongest correlation observed thus far.<br>
+Free Sulphur Dioxide vs Total Sulphur Dioxide
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+plot(wine_qual$free.sulfur.dioxide,wine_qual$total.sulfur.dioxide,main = "free sulphur
+  dioxide vs total sulphur dioxide",xlab = "free sulphur dioxide",
+     ylab = "total sulphur dioxide")
+
+cor(wine_qual$free.sulfur.dioxide,wine_qual$total.sulfur.dioxide)
+```
+It is not surprising that free sulphur dioxide and total sulphur dioxide show a strong positive correlation since the former is a subset of the latter.<br>
+<b>Observations</b><br>
+1. The strongest correlations were between quality and pH, pH and density, quality and alcohol content and quality and sulphates.<br> 
+
+2. Free sulphur dioxide and pH seem to have no effect on the quality of the wine <br>
+
+3. Chlorides, pH, density, volatile acidity, free and total sulphur dioxide all show a negative correlation with wine quality <br>
+
+4. Alcohol content, fixed acidity, citric acidity, and sulphates all show a positive correlation with wine quality <br>
+
+5. Citric acidity, and sulphates had moderate correlation values meanwhile chlorides, density, fixed acidity, and total acidity showed had a weak correlation to wine quality <br>
+
+6. Better wines are more acidic, are less dense and have a higher alcohol content
+<br>
+
+<b>Special features</b><br>
+
+The things I found interesting were the high correlation between density and pH, alcohol content and pH also the lack of correlation between quality and residual sugar. The insignificance of the effect of pH on quality may be due to the fact the pH range of the dataset was narrow and suggest an incomplete dataset. A wider range of pH within the sample may have revealed a stronger correlation that was expected. <br>
+
+<b>Summary of Bivariate Plots</b><br>
+The plot() function was used to generate bivariate plots of interested variables in order to determine if there is any correlation. The plots are shown below and a summary is given of the inferences which can be derived from them.<br> 
+The plots of the types of acidity with each other was done to determine the relationship between them and to decide which of the three to choose in the final linear model. The plot of citric acidity vs. volatile acidity informs that citric acid is a non-volatile acid and though it wasn't plotted we would expect a positive correlation between fixed acidity and citric acidity from our investigation. The plot of fixed acidity vs. volatile acidity on the other hand shows a constant trend line with majority of the values of volatile acidity residing within 0.3 and 0.7 whilst that of fixed acidity resides between the ranges of 6.0 and 10.4. The plot of pH vs. density was highly correlated as was suspected and suggests that the changes in the density of the wine is proportional to the associated changes in its pH. The plot of pH vs. alcohol content shows that as pH increases so too does the alcohol content however the interesting observation is that the ranges of pH are 3.0 and 3.6 which is acidic.<br>   
+The plot of pH vs. wine quality shows that as the pH so too does the quality of the wine with a few outliers particularly at wine quality value of 8. The observations for the correlation between citric acidity is expected from the observations of pH. The plot of quality vs. free and total sulphur dioxide shows the interesting trend that very low concentrations of sulphur dioxide produces bad wine but very high concentrations produces wine of average quality therefore the concentration of sulphur dioxide needs to be intermediate to produce good wine. The plot of wine quality vs. chlorides showed as was expected that there is no correlation between the quality of the wine and its chloride content and from the dataset that the amount of chloride remained constant across the different quality values. The plot of pH vs. sulphates shows a similar trend with that of sulphur dioxide in that good wine has an intermediate concentration of sulphates, between 0.5 and 1.0, with too high concentrations producing average wine. The plot of residual sugar was omitted and its trend is asserted from its similarity with chlorides from the univariate plots also the plots of pH vs. the various types of acidity were omitted since a linear correlation can be interpolated from the other plots that were done. From these observations we can proceed with carefully selecting the variables from which to construct our linear models.<br>
+
+<b>Multivariate Plots</b><br>
+Fixed Acidity vs Cirtic Acidity
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(aes(x = fixed.acidity, y = citric.acid, col = factor(quality)),
+       data = wine_qual) + 
+  geom_point(alpha=0.8,size=2) +
+  geom_smooth(method ="lm",se=FALSE,size=1) +
+  labs(x="fixed acidity",y="citric acidity")
+```
+As suspected from the bivariate plots we see that fixed acidity and citric acidity are highly correlated.<br>
+Volatile Acidity vs Citric Acidity
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(aes(x = volatile.acidity, y = citric.acid, col = factor(quality)),
+       data = wine_qual) + 
+  geom_point(alpha=0.8,size=2) +
+  geom_smooth(method ="lm",se=FALSE,size=1) +
+  labs(x="volatile acidity",y="citric acidity")
+```
+High citric acidity and low volatile acidity seems to produce better wines<br>
+Alcohol vs pH
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(aes(x = alcohol, y = pH, col = factor(quality)),
+       data = wine_qual) + 
+  geom_point(alpha=0.8,size=2) +
+  geom_smooth(method ="lm",se=FALSE,size=1) +
+  labs(x="alcohol",y="pH")
+```
+Again we see that low pH and high alcohol content corresponds to better quality wines.<br>
+Alcohol vs Sulphates
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(aes(x = alcohol, y = sulphates, col = factor(quality)),
+       data = wine_qual) + 
+  geom_point(alpha=0.8,size=2) +
+  geom_smooth(method ="lm",se=FALSE,size=1) +
+  labs(x="alcohol",y="sulphates")
+```
+There is a near constant trendline over all the wine quality values which suggests that low conentrations of sulphate and high contretrations of alcohol contributes to better quality wine.<br>
+Alcohol vs Density
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(aes(x = alcohol, y = density, col = factor(quality)),
+       data = wine_qual) + 
+  geom_point(alpha=0.8,size=2) +
+  geom_smooth(method ="lm",se=FALSE,size=1) +
+  labs(x="alcohol",y="density")
+```
+The strong negative correlation between alcohol and density supports our previous assertion that it is the changes in alcohol content that are responsible for the changes in density.
+<br>
+Alcohol vs Residual Sugar
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(aes(x = alcohol, y = residual.sugar, col = factor(quality)),
+       data = wine_qual) + 
+  geom_point(alpha=0.8,size=2) +
+  geom_smooth(method ="lm",se=FALSE,size=1) +
+  labs(x="alcohol",y="residual sugar")
+```
+The general observation is that there seems to be no correlation between residual sugar and alcohol content which is particularly true for average and good quality wine.<br>
+Alcohol vs Total Sulphur Dioxide
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(aes(x = alcohol, y = total.sulfur.dioxide, col = factor(quality)),
+       data = wine_qual) + 
+  geom_point(alpha=0.8,size=2) +
+  geom_smooth(method ="lm",se=FALSE,size=1) +
+  labs(x="alcohol",y="total sulphur dioxide")
+```
+The observation is that low values of total sulphur dioxide with high concentrations of alcohol content results in better quality wines.<br>
+Alcohol vs Volatile Acidity
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(aes(x = alcohol, y = volatile.acidity, col = factor(quality)),
+       data = wine_qual) + 
+  geom_point(alpha=0.8,size=2) +
+  geom_smooth(method ="lm",se=FALSE,size=1) +
+  labs(x="alcohol",y="volatile acidity")
+```
+Low concentrations of volatile acidity and higher concentrations of alcohol content seems to produce better quality wines.<br>
+pH vs Density
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(aes(x = pH, y = density, col = factor(quality)),
+       data = wine_qual) + 
+  geom_point(alpha=0.8,size=2) +
+  geom_smooth(method ="lm",se=FALSE,size=1) +
+  labs(x="pH",y="density")
+```
+Small values of density and large acidic values of pH seems to give better quality wines<br>
+
+<b>Summary of Multivariate Plots</b><br>
+The values of multiple variables were compared with the quality of wine using the ggplot() function and the graphs are given above. As was suspected the first plot highlights that the majority of the dataset consists of wine of average quality with very few data points for poor and good quality. It seems evident that the correlation between density and quality is as a result of the effect of changes in alcohol content. The comparison between alcohol content and residual sugar showed no correlation for most of the dataset however there is a positive correlation for poor quality wine. This suggests that poor wine has higher levels of residual sugar which may explain its lower alcohol content and its low quality rating. With the insights we have obtained from the previous analyses we can proceed to the construction of our linear models.<br> 
+
+<b> Construction of Linear Models</b><br>
+Quality as a function of alcohol content
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+model.alcohol <- lm(formula = as.numeric(wine_qual$quality)~wine_qual$alcohol,
+                    data = wine_qual)
+summary(model.alcohol)
+```
+Quality as a function of pH 
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+model.pH <- lm(formula = as.numeric(wine_qual$quality)~wine_qual$pH,data=wine_qual)
+summary(model.pH)
+```
+Quality as a function of alcohol and pH 
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+model.pHAl <- lm(formula = as.numeric(wine_qual$quality)~wine_qual$alcohol + wine_qual$pH,
+                                 data = wine_qual)
+summary(model.pHAl)
+```
+Quality as a function of alcohol, pH and sulphates 
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+model.pHAlSul <- lm(formula = as.numeric(wine_qual$quality)~wine_qual$alcohol + wine_qual$pH
+                 +wine_qual$sulphates,data = wine_qual)
+summary(model.pHAlSul)
+```
+Quality as a function of alcohol, pH, sulphates and total sulphur dioide 
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+model.pHAlSulTot <- lm(formula = as.numeric(wine_qual$quality)~wine_qual$alcohol + wine_qual$pH
+                    +wine_qual$sulphates+wine_qual$total.sulfur.dioxide,data = wine_qual)
+summary(model.pHAlSulTot)
+```
+<br>
+
+<b>Linear models</b><br>
+The lm() function was used to create models for the quality of wine as a function of the variables alcohol, pH, sulphates, and total sulphur dioxide while the summary() functions was used to view the results. The first model only consisted of wine quality as a function of alcohol content with an intercept of 1.87497 and a slope of 0.36084 also the R2 value was 0.2267 which indicates that alcohol content accounts for 22.67% of the observed variation. This further supports the claim that alcohol content is highly correlated with wine quality. The second model consisted of quality as a function of pH only with an intercept of 6.6359 and a slope of -0.3020 and a R2 value of 0.003333 which indicates that the pH alone isn't sufficient to account for the observed variance in the dataset. The next model was constructed using both pH and alcohol as independent variables for the quality which resulted in a R2 value of 0.252 indicating that the addition of pH only marginally improves the account of the variance. The following model included sulphates which resulted in an intercept of 3.34450 and a R2 value of 0.2833 which similar to the addition of pH accounted for an additional 3% of the variance. The next model saw the addition of total sulphur dioxide which resulted in an intercept of 3.642841 and a R2 value of 0.2941 thus accounting less than 1% of the observed variance. Based on the models we can conclude that the factor with the largest contribution to the wine quality is most definitely the alcohol content. The reason for the low contribution of the other factors and the small account of the variance that is accounted for by alcohol and the other factors combined, 29%, may be due to the fact that the dataset is predominantly comprised of average quality wine and the statistical results would be improved if a more inclusive and complete dataset was used.<br>
+
+<b>Final Plots & Summary</b><br>
+From the linear model  we notice that alcohol content and sulphate concentration had major contributions to the wine quality. The correlation between pH and quality was also something that i'd like to highlight and thus the reason for the three chosen plots.
+<br>
+Plot 1 <br>
+Alcohol content vs Wine Quality
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+boxplot(alcohol~quality,data=wine_qual,main = "wine quality vs
+        alcohol",xlab="quality",ylab="alcohol")
+```
+This plot indicates that wine quality increases as the alcohol percentage increases. Alcohol content accounts for 22% of the observed variance however the remainder of the variance is not well acounted for by the remaining variables as was highlighted from the linear models. As mentioned before the current dataset predominantly consists of average quality wine and therefore a more complete dataset may be required to account for the unaccounted variance.<br>
+Plot 2 <br>
+Effect of Alcohol and Sulphates on Wine Quality
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(aes(x = alcohol, y = sulphates, col = factor(quality)),
+       data = wine_qual) + 
+  geom_point(alpha=0.8,size=2) +
+  geom_smooth(method ="lm",se=FALSE,size=1) +
+  labs(x="alcohol percentage",y="potassium sulphate (g/dm3)")
+```
+This plot reveals that the best quality wines have high a high alcohol percentage and low sulphate concentration. The slightly negative slopes indicate that in better quality wine the alcohol percentage is slightly greater than the sulphate concentration.<br>
+Plot 3 <br>
+Influence of pH on Wine Quality
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+boxplot(pH~quality,data=wine_qual,main = "wine quality vs
+        pH",xlab="quality",ylab="pH")
+```
+This plot also reveals that better quality wines have a lower pH in particular the pH range is acidic. A thing to note is that the pH range of the dataset is narrow and lies between 3.2 and 3.5.<br>
+<b>Conclusion</b><br>
+The red wine dataset presents an interesting collection of data to conduct exploratory statistics using R as tool for the analysis. It was discovered that the dataset was largely comprised of wine of average quality which limited the results of the types of analysis that could be conducted to account for the variance within the data. Of the 12 variables within the dataset it was discovered that two of them, chlorides and residual sugar, seemed to play no significance to the quality of the wine. It was also discovered that there is a positive correspondence between pH and density and pH and alcohol content which both were correlated with the quality of the wine. The most impactful variable was alcohol content which accounted for 22% of the variance in the dataset with the combined impact of the other significant variables, pH, sulphates, and total sulphur dioxide only accounting for the remaining 7%. In the future I would like to have a more complete dataset which was uniformly representative of the different quality of wine in order to account for the remaining 71% of variance.
